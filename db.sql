@@ -12,6 +12,15 @@ create table article(
                         `body` text not null
 );
 
+CREATE TABLE `member` (
+                          id INT(10) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                          regDate DATETIME NOT NULL,
+                          updateDate DATETIME NOT NULL,
+                          loginId CHAR(30) NOT NULL,
+                          loginPw CHAR(200) NOT NULL,
+                          `name` CHAR(100) NOT NULL
+);
+
 desc article;
 
 select *
