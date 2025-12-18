@@ -1,7 +1,9 @@
 package org.example;
 
+import org.example.Controller.ArticleController;
 import org.example.Controller.MemberController;
 import org.example.dao.ArticleDao;
+import org.example.service.ArticleService;
 import org.example.service.MemberService;
 import org.example.util.DBUtil;
 import org.example.util.SecSql;
@@ -16,6 +18,9 @@ public class App {
 
     MemberService memberService = new MemberService();
     MemberController memberController = new MemberController(sc, memberService);
+
+    ArticleService articleService = new ArticleService();
+    ArticleController articleController = new ArticleController(articleService);
 
     public void run() {
 
@@ -88,31 +93,15 @@ public class App {
             System.out.print("내용 : ");
             String body = sc.nextLine();
 
-            int id = ArticleDao.insert(conn, title, body);
+            int id = ArticleService.insert(conn, title, body);
 
             System.out.println(id + "번 글이 생성되었습니다.");
-           //System.out.println(sql.toString());
 
         }
         else if (cmd.equals("article list")) {
             System.out.println("==목록==");
 
-            List<Article> articles = new ArrayList<>();
-
-            /*
-            SecSql sql = new SecSql();
-            sql.append(("SELECT * FROM article"));
-            sql.append("ORDER BY id DESC");
-
-            List<Map<String, Object>> articleListMap = DBUtil.selectRows(conn, sql);
-
-            for(Map<String, Object> articleMap : articleListMap) {
-                articles.add(new Article(articleMap));
-            }
-
-
-             */
-            List<Article> articles = ArticleDao.findAll(conn);
+            List<Article> articles = ArticleService.findAll(conn);
 
             if (articles.isEmpty()) {
                 System.out.println("게시글이 없습니다");
@@ -142,37 +131,15 @@ public class App {
             System.out.print("새 내용 : ");
             String body = sc.nextLine().trim();
 
-/*
-            SecSql sql = new SecSql();
-            sql.append("UPDATE article");
-            sql.append("SET updateDate = NOW()");
-            if(!title.isEmpty())
-                sql.append(", title = ?", title);
-            if(!body.isEmpty())
-                sql.append(", body = ?", body);
-            sql.append("WHERE id = ?", id);
-
-            String sqlStr = sql.toString();
-
-            DBUtil.update(conn,sql);
-            */
-
-            ArticleDao.update(conn, title, id);
+            ArticleService.update(conn, title, id);
 
             System.out.println(id + "번 글이 수정되었습니다.");
         }
         else if (cmd.startsWith("article delete ")) {
             int id = Integer.parseInt(cmd.replace("article delete ", ""));
 
-            /*
-            SecSql sql = new SecSql();
-            sql.append("DELETE FROM article");
-            sql.append("WHERE id = ?", id);
 
-            DBUtil.update(conn,sql);
-             */
-
-            ArticleDao.delete(conn, id);
+            ArticleService.delete(conn, id);
 
             System.out.println(id + "번 글이 삭제 되었습니다.");
         }
