@@ -2,22 +2,20 @@ package org.example.service;
 
 import org.example.Article;
 import org.example.dao.ArticleDao;
-import org.example.util.SecSql;
 
 import java.sql.Connection;
 import java.util.List;
-import java.util.Scanner;
 
 public class ArticleService {
 
-    ArticleDao articleDao;
+    private ArticleDao articleDao;
 
-    public ArticleService(ArticleDao articleDao) {
+    public ArticleService() {
 
-        this.articleDao = articleDao;
+        articleDao = new ArticleDao();
     }
 
-    public int write(Connection conn, String title, String body) {
+    public int insert(Connection conn, String title, String body) {
 
         return articleDao.insert(conn, title, body);
     }

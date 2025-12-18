@@ -7,8 +7,8 @@ import java.util.Scanner;
 
 public class MemberController {
 
-    Scanner sc;
-    MemberService memberService;
+    private Scanner sc;
+    private MemberService memberService;
 
     public MemberController(Scanner sc, MemberService memberService) {
         this.sc = sc;

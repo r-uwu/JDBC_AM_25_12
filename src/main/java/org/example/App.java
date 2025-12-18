@@ -16,11 +16,12 @@ import java.util.Scanner;
 
 public class App {
 
+    Scanner sc = new Scanner(System.in);
     MemberService memberService = new MemberService();
     MemberController memberController = new MemberController(sc, memberService);
 
     ArticleService articleService = new ArticleService();
-    ArticleController articleController = new ArticleController(articleService);
+    ArticleController articleController = new ArticleController(sc, articleService);
 
     public void run() {
 
@@ -84,24 +85,16 @@ public class App {
 
             memberController.join(conn);
 
+        } else if (cmd.equals("article write")) {
+
+            articleController.insert(conn);
         }
 
-            else if (cmd.equals("article write")) {
-            System.out.println("==글쓰기==");
-            System.out.print("제목 : ");
-            String title = sc.nextLine();
-            System.out.print("내용 : ");
-            String body = sc.nextLine();
 
-            int id = ArticleService.insert(conn, title, body);
-
-            System.out.println(id + "번 글이 생성되었습니다.");
-
-        }
         else if (cmd.equals("article list")) {
             System.out.println("==목록==");
 
-            List<Article> articles = ArticleService.findAll(conn);
+            List<Article> articles = articleService.findAll(conn);
 
             if (articles.isEmpty()) {
                 System.out.println("게시글이 없습니다");
@@ -114,6 +107,9 @@ public class App {
 
             }
         }
+
+
+
         else if (cmd.startsWith("article modify")) {
 
             int id = 0;
@@ -122,48 +118,32 @@ public class App {
                 id = Integer.parseInt(cmd.split(" ")[2]);
             } catch (Exception e) {
                 System.out.println("번호는 정수로 입력해");
-                return 0;
             }
 
-            System.out.println("==수정==");
-            System.out.print("새 제목 : ");
-            String title = sc.nextLine().trim();
-            System.out.print("새 내용 : ");
-            String body = sc.nextLine().trim();
+            articleController.update(conn, id);
+        } else if (cmd.startsWith("article delete ")) {
 
-            ArticleService.update(conn, title, id);
-
-            System.out.println(id + "번 글이 수정되었습니다.");
-        }
-        else if (cmd.startsWith("article delete ")) {
             int id = Integer.parseInt(cmd.replace("article delete ", ""));
 
-
-            ArticleService.delete(conn, id);
-
-            System.out.println(id + "번 글이 삭제 되었습니다.");
+            articleController.delete(conn, id);
         }
+
+        /*
         else if (cmd.startsWith("article detail ")) {
 
             int id = Integer.parseInt(cmd.replace("article detail ", ""));
 
-            SecSql sql = new SecSql();
-            sql.append("SELECT * FROM article");
-            sql.append("WHERE id = ?", id);
 
-            Map<String, Object> articleMap = DBUtil.selectRow(conn, sql);
-            if (articleMap.isEmpty()) {
-                System.out.println(id + "번 글은 존재하지 않습니다.");
-                return 0;
-            }
-            Article article = new Article(articleMap);
             System.out.println("번호 : " + article.getId());
             System.out.println("작성날짜 :  " + article.getRegDate());
             System.out.println("수정날짜 : " + article.getUpdateDate());
             System.out.println("제목 : " + article.getTitle());
             System.out.println("내용 : " + article.getBody());
 
+
+
         }
-        return 0;
+         */
+        return 1;
     }
 }
