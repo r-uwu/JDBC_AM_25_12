@@ -39,3 +39,11 @@ select '제목1';
 select concat('제목','2');
 
 select substring(RAND() * 1000 from 1 for 2);
+
+
+#
+
+ALTER TABLE article ADD writer CHAR(30) AFTER id
+ALTER TABLE article ADD writerId INT(10) UNSIGNED NOT NULL AFTER writer;
+
+#

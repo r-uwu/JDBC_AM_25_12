@@ -6,7 +6,6 @@ public class Member {
 
     private int id;
     private String regDate;
-    private String updateDate;
     private String userId;
     private String userPw;
     private String name;
@@ -14,7 +13,6 @@ public class Member {
     public Member(Map<String, Object> row) {
         this.id = (int) row.get("id");
         this.regDate = (String) row.get("regDate");
-        this.updateDate = (String) row.get("updateDate");
         this.userId = (String) row.get("loginId");
         this.userPw = (String) row.get("loginPw");
         this.name = (String) row.get("name");

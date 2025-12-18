@@ -43,6 +43,4 @@ public class MemberDao {
 
         return new Member(row);
     }
-
-
 }

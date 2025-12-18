@@ -26,19 +26,32 @@ public class MemberController {
             return;
         }
 
-        System.out.println("== 로그인 ==");
-        System.out.print("로그인 아이디 : ");
-        String loginId = sc.nextLine().trim();
-        System.out.print("비밀번호 : ");
-        String loginPw = sc.nextLine().trim();
+        int tryLoggedIn = 0;
 
-        try {
-            Member member = memberService.login(conn, loginId, loginPw);
-            session.login(member);
+        while(true) {
+            if (tryLoggedIn >= 3) {
+                System.out.println("3회 이상 로그인 오류. 잠시 후 다시 시도해주세요.");
+                break;
+            }
 
-            System.out.println(member.getName() + "님 로그인 되었습니다.");
-        } catch (RuntimeException e) {
-            System.out.println(e.getMessage());
+            tryLoggedIn++;
+            System.out.println("== 로그인 ==");
+            System.out.print("로그인 아이디 : ");
+            String loginId = sc.nextLine().trim();
+            System.out.print("비밀번호 : ");
+            String loginPw = sc.nextLine().trim();
+
+            try {
+                Member member = memberService.login(conn, loginId, loginPw);
+
+                session.login(member);
+                System.out.println(member.getName() + "님 로그인 되었습니다.");
+
+                break;
+
+            } catch (RuntimeException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
 
@@ -119,7 +132,5 @@ public class MemberController {
         int id = memberService.join(conn, loginId, loginPw, name);
 
         System.out.println(id + "번 회원 가입함");
-
     }
-
 }

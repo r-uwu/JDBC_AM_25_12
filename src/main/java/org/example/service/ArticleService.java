@@ -4,6 +4,7 @@ import org.example.Article;
 import org.example.dao.ArticleDao;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 public class ArticleService {
@@ -15,9 +16,9 @@ public class ArticleService {
         articleDao = new ArticleDao();
     }
 
-    public int insert(Connection conn, String title, String body) {
+    public int insert(Connection conn, String title, String body, String writer, int writerId) throws SQLException {
 
-        return articleDao.insert(conn, title, body);
+        return articleDao.insert(conn, title, body, writer, writerId);
     }
 
     public List<Article> findAll(Connection conn) {

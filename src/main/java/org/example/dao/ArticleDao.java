@@ -5,17 +5,20 @@ import org.example.util.DBUtil;
 import org.example.util.SecSql;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ArticleDao {
 
-    public int insert(Connection conn, String title, String body) {
+    public int insert(Connection conn, String title, String body, String writer, int writerId) throws SQLException {
 
         SecSql sql = new SecSql();
         sql.append("INSERT INTO article");
         sql.append("SET");
+        sql.append("writer = ?,", writer);
+        sql.append("writerId = ?,", writerId);
         sql.append("regDate = NOW(),");
         sql.append("updateDate = NOW(),");
         sql.append("title = ?,", title);
