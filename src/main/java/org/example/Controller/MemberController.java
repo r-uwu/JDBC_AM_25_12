@@ -1,6 +1,8 @@
 package org.example.Controller;
 
+import org.example.Member;
 import org.example.service.MemberService;
+import org.example.util.Session;
 
 import java.sql.Connection;
 import java.util.Scanner;
@@ -9,10 +11,48 @@ public class MemberController {
 
     private Scanner sc;
     private MemberService memberService;
+    private Session session;
 
-    public MemberController(Scanner sc, MemberService memberService) {
+    public MemberController(Scanner sc, MemberService memberService, Session session) {
         this.sc = sc;
         this.memberService = memberService;
+        this.session = session;
+    }
+
+    public void login(Connection conn) {
+
+        if (session.isLoggedIn()) {
+            System.out.println("이미 로그인 상태입니다.");
+            return;
+        }
+
+        System.out.println("== 로그인 ==");
+        System.out.print("로그인 아이디 : ");
+        String loginId = sc.nextLine().trim();
+        System.out.print("비밀번호 : ");
+        String loginPw = sc.nextLine().trim();
+
+        try {
+            Member member = memberService.login(conn, loginId, loginPw);
+            session.login(member);
+
+            System.out.println(member.getName() + "님 로그인 되었습니다.");
+        } catch (RuntimeException e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void logout() {
+
+        if (!session.isLoggedIn()) {
+            System.out.println("이미 로그아웃 상태입니다.");
+            return;
+        }
+
+        String name = session.getLoginMember().getName();
+        session.logout();
+
+        System.out.println(name + "님 로그아웃 되었습니다.");
     }
 
     public void join(Connection conn)
@@ -21,8 +61,6 @@ public class MemberController {
         String loginPw = null;
         String loginPwConfirm = null;
         String name = null;
-
-        //이 아래로 멤버 컨트롤러로 이송예정
 
         System.out.println("==회원가입==");
         while (true) {
@@ -80,7 +118,6 @@ public class MemberController {
 
         int id = memberService.join(conn, loginId, loginPw, name);
 
-        //위에까지 멤버 컨트롤러로
         System.out.println(id + "번 회원 가입함");
 
     }

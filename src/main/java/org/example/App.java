@@ -2,26 +2,29 @@ package org.example;
 
 import org.example.Controller.ArticleController;
 import org.example.Controller.MemberController;
-import org.example.dao.ArticleDao;
 import org.example.service.ArticleService;
 import org.example.service.MemberService;
-import org.example.util.DBUtil;
-import org.example.util.SecSql;
+import org.example.util.Session;
+
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Scanner;
 
 public class App {
 
     Scanner sc = new Scanner(System.in);
+    Session session = new Session();
+
     MemberService memberService = new MemberService();
-    MemberController memberController = new MemberController(sc, memberService);
+    MemberController memberController = new MemberController(sc, memberService, session);
 
     ArticleService articleService = new ArticleService();
-    ArticleController articleController = new ArticleController(sc, articleService);
+    ArticleController articleController = new ArticleController(sc, articleService, session);
+
+
+    private boolean isLoggedIn = false;
 
     public void run() {
 
@@ -30,7 +33,6 @@ public class App {
         Scanner sc = new Scanner(System.in);
         int lastArticleId = 0;
         List<Article> articles = new ArrayList<>();
-
 
         System.out.println("==프로그램 시작==");
 
@@ -81,6 +83,14 @@ public class App {
 
     private int doAction(Connection conn, Scanner sc, String cmd) throws SQLException {
 
+        if (cmd.equals("login")) {
+            memberController.login(conn);
+
+        }
+        else if(cmd.equals("logout")) {
+            memberController.logout();
+        }
+
         if (cmd.equals("member join")) {
 
             memberController.join(conn);
@@ -92,23 +102,10 @@ public class App {
 
 
         else if (cmd.equals("article list")) {
-            System.out.println("==목록==");
 
-            List<Article> articles = articleService.findAll(conn);
+            articleController.findAll(conn);
 
-            if (articles.isEmpty()) {
-                System.out.println("게시글이 없습니다");
-                return 0;
-            }
-            System.out.println("  번호  /   제목  ");
-
-            for (Article article : articles) {
-                System.out.printf("  %d     /   %s   \n", article.getId(), article.getTitle());
-
-            }
         }
-
-
 
         else if (cmd.startsWith("article modify")) {
 
@@ -128,22 +125,13 @@ public class App {
             articleController.delete(conn, id);
         }
 
-        /*
+
         else if (cmd.startsWith("article detail ")) {
 
-            int id = Integer.parseInt(cmd.replace("article detail ", ""));
-
-
-            System.out.println("번호 : " + article.getId());
-            System.out.println("작성날짜 :  " + article.getRegDate());
-            System.out.println("수정날짜 : " + article.getUpdateDate());
-            System.out.println("제목 : " + article.getTitle());
-            System.out.println("내용 : " + article.getBody());
-
-
-
+            articleController.detail(conn, cmd);
         }
-         */
+
         return 1;
+        //이 위에있는 리턴 어떢함?
     }
 }

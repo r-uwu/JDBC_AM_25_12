@@ -43,7 +43,22 @@ public class ArticleService {
 
     }
 
+    public Article findById(Connection conn, int id)
+    {
 
+        Article article = articleDao.findById(conn, id);
 
+        if(article == null) {
+            throw new RuntimeException("글이 조회되지 않음");
 
+            //throw new ArticleNotFoundException(id);
+            //혹은
+            //Optional (삼항연산자로 db에서부터 비었는지 확인해서 없으면 Optional.empty 반환 있으면 db값꺼내서반환하는거인듯?
+            //근데 optional 메서드 어디서 생성하는지
+            // 이거 귀찮아보이는데 하지말까
+        }
+
+        else return article;
+
+    }
 }
