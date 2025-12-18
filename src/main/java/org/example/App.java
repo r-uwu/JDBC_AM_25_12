@@ -13,6 +13,10 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class App {
+
+    MemberService memberService = new MemberService();
+    MemberController memberController = new MemberController(sc, memberService);
+
     public void run() {
 
         PreparedStatement pstmt = null;
@@ -20,8 +24,6 @@ public class App {
         Scanner sc = new Scanner(System.in);
         int lastArticleId = 0;
         List<Article> articles = new ArrayList<>();
-        MemberService memberService = new MemberService();
-        MemberController memberController = new MemberController(sc, memberService);
 
 
         System.out.println("==프로그램 시작==");
@@ -71,14 +73,13 @@ public class App {
         sc.close();
     }
 
-    private int doAction(Connection conn, Scanner sc, String cmd, MemberController memberController) throws SQLException {
+    private int doAction(Connection conn, Scanner sc, String cmd) throws SQLException {
 
         if (cmd.equals("member join")) {
 
             memberController.join(conn);
 
         }
-
 
             else if (cmd.equals("article write")) {
             System.out.println("==글쓰기==");
@@ -98,6 +99,7 @@ public class App {
 
             List<Article> articles = new ArrayList<>();
 
+            /*
             SecSql sql = new SecSql();
             sql.append(("SELECT * FROM article"));
             sql.append("ORDER BY id DESC");
@@ -107,6 +109,10 @@ public class App {
             for(Map<String, Object> articleMap : articleListMap) {
                 articles.add(new Article(articleMap));
             }
+
+
+             */
+            List<Article> articles = ArticleDao.findAll(conn);
 
             if (articles.isEmpty()) {
                 System.out.println("게시글이 없습니다");
@@ -136,7 +142,7 @@ public class App {
             System.out.print("새 내용 : ");
             String body = sc.nextLine().trim();
 
-
+/*
             SecSql sql = new SecSql();
             sql.append("UPDATE article");
             sql.append("SET updateDate = NOW()");
@@ -149,16 +155,24 @@ public class App {
             String sqlStr = sql.toString();
 
             DBUtil.update(conn,sql);
+            */
+
+            ArticleDao.update(conn, title, id);
 
             System.out.println(id + "번 글이 수정되었습니다.");
         }
         else if (cmd.startsWith("article delete ")) {
             int id = Integer.parseInt(cmd.replace("article delete ", ""));
+
+            /*
             SecSql sql = new SecSql();
             sql.append("DELETE FROM article");
             sql.append("WHERE id = ?", id);
 
             DBUtil.update(conn,sql);
+             */
+
+            ArticleDao.delete(conn, id);
 
             System.out.println(id + "번 글이 삭제 되었습니다.");
         }
