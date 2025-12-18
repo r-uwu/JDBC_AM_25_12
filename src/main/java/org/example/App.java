@@ -1,5 +1,8 @@
 package org.example;
 
+import org.example.Controller.MemberController;
+import org.example.dao.ArticleDao;
+import org.example.service.MemberService;
 import org.example.util.DBUtil;
 import org.example.util.SecSql;
 
@@ -17,6 +20,9 @@ public class App {
         Scanner sc = new Scanner(System.in);
         int lastArticleId = 0;
         List<Article> articles = new ArrayList<>();
+        MemberService memberService = new MemberService();
+        MemberController memberController = new MemberController(sc, memberService);
+
 
         System.out.println("==프로그램 시작==");
 
@@ -65,112 +71,26 @@ public class App {
         sc.close();
     }
 
-    private int doAction(Connection conn, Scanner sc, String cmd) throws SQLException {
+    private int doAction(Connection conn, Scanner sc, String cmd, MemberController memberController) throws SQLException {
 
         if (cmd.equals("member join")) {
-            String loginId = null;
-            String loginPw = null;
-            String loginPwConfirm = null;
-            String name = null;
-            System.out.println("==회원가입==");
-            while (true) {
-                System.out.print("로그인 아이디 : ");
-                loginId = sc.nextLine().trim();
 
-                if (loginId.isEmpty() || loginId.contains(" ")) {
-                    System.out.println("아이디 똑바로 써");
-                    continue;
-                }
+            memberController.join(conn);
 
-                SecSql sql = new SecSql();
-
-                sql.append("SELECT COUNT(*) > 0");
-                sql.append("FROM `member`");
-                sql.append("WHERE loginId = ?;", loginId);
-
-                boolean isLoginIdDup = DBUtil.selectRowBooleanValue(conn, sql);
-
-                System.out.println(isLoginIdDup);
-
-                if (isLoginIdDup) {
-                    System.out.println(loginId + "은(는) 이미 사용중");
-                    continue;
-                }
-                break;
-            }
-
-            while (true) {
-                System.out.print("비밀번호 : ");
-                loginPw = sc.nextLine().trim();
-
-                if (loginPw.length() == 0 || loginPw.contains(" ")) {
-                    System.out.println("비밀번호 똑바로 써");
-                    continue;
-                }
-
-                boolean loginCheckPw = true;
-
-                while (true) {
-                    System.out.print("비번 확인 : ");
-                    loginPwConfirm = sc.nextLine().trim();
-
-                    if (loginPwConfirm.length() == 0 || loginPwConfirm.contains(" ")) {
-                        System.out.println("비밀번호 확인 똑바로 써");
-                        continue;
-                    }
-
-                    if (loginPw.equals(loginPwConfirm) == false) {
-                        System.out.println("비번이 일치하지 않아");
-                        loginCheckPw = false;
-                    }
-                    break;
-                }
-                if (loginCheckPw) {
-                    break;
-                }
-            }
-            while (true) {
-                System.out.print("이름 : ");
-                name = sc.nextLine().trim();
-
-                if (name.length() == 0 || name.contains(" ")) {
-                    System.out.println("이름 똑바로 써");
-                    continue;
-                }
-                break;
-            }
-
-            SecSql sql = new SecSql();
-            sql.append("INSERT INTO `member`");
-            sql.append("SET regDate = NOW(),");
-            sql.append("updateDate = NOW(),");
-            sql.append("loginId = ?,", loginId);
-            sql.append("loginPw = ?,", loginPw);
-            sql.append("name = ?;", name);
-
-            int id = DBUtil.insert(conn, sql);
-
-            System.out.println(id + "번 회원 가입함");
         }
-        else if (cmd.equals("article write")) {
+
+
+            else if (cmd.equals("article write")) {
             System.out.println("==글쓰기==");
             System.out.print("제목 : ");
             String title = sc.nextLine();
             System.out.print("내용 : ");
             String body = sc.nextLine();
 
-            SecSql sql = new SecSql();
-            sql.append(("INSERT INTO article"));
-            sql.append("SET");
-            sql.append("regDate = NOW(),");
-            sql.append("updateDate = NOW(),");
-            sql.append("title = ?,", title);
-            sql.append("body = ?", body);
-
-            int id = DBUtil.insert(conn, sql);
+            int id = ArticleDao.insert(conn, title, body);
 
             System.out.println(id + "번 글이 생성되었습니다.");
-            System.out.println(sql.toString());
+           //System.out.println(sql.toString());
 
         }
         else if (cmd.equals("article list")) {
@@ -215,6 +135,7 @@ public class App {
             String title = sc.nextLine().trim();
             System.out.print("새 내용 : ");
             String body = sc.nextLine().trim();
+
 
             SecSql sql = new SecSql();
             sql.append("UPDATE article");
