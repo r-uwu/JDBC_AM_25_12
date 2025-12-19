@@ -1,4 +1,4 @@
-package org.example.Controller;
+package org.example.controller;
 
 import org.example.Member;
 import org.example.service.MemberService;
@@ -81,7 +81,7 @@ public class MemberController {
             loginId = sc.nextLine().trim();
 
             if (loginId.isEmpty() || loginId.contains(" ")) {
-                System.out.println("아이디 똑바로 써");
+                System.out.println("아이디가 입력되지 않았습니다.");
                 continue;
             }
 
@@ -90,7 +90,7 @@ public class MemberController {
                 loginPw = sc.nextLine().trim();
 
                 if (loginPw.length() == 0 || loginPw.contains(" ")) {
-                    System.out.println("비밀번호 똑바로 써");
+                    System.out.println("비밀번호가 입력되지 않았습니다.");
                     continue;
                 }
 
@@ -101,12 +101,12 @@ public class MemberController {
                     loginPwConfirm = sc.nextLine().trim();
 
                     if (loginPwConfirm.length() == 0 || loginPwConfirm.contains(" ")) {
-                        System.out.println("비밀번호 확인 똑바로 써");
+                        System.out.println("비밀번호가 입력되지 않았습니다.");
                         continue;
                     }
 
                     if (loginPw.equals(loginPwConfirm) == false) {
-                        System.out.println("비번이 일치하지 않아");
+                        System.out.println("처음 비밀번호와 일치하지 않습니다.");
                         loginCheckPw = false;
                     }
                     break;
@@ -121,7 +121,7 @@ public class MemberController {
                 name = sc.nextLine().trim();
 
                 if (name.length() == 0 || name.contains(" ")) {
-                    System.out.println("이름 똑바로 써");
+                    System.out.println("이름을 작성하지 않았어요.");
                     continue;
                 }
                 break;
@@ -132,5 +132,21 @@ public class MemberController {
         int id = memberService.join(conn, loginId, loginPw, name);
 
         System.out.println(id + "번 회원 가입함");
+    }
+
+    public void showProfile(Connection conn)
+    {
+        if (!session.isLoggedIn()) {
+            System.out.println("로그아웃 상태입니다. 로그인하고 시도해주세요.");
+            return;
+        }
+
+        Member member = memberService.memberProfile(conn, session.getLoginMember().getUserId());
+
+        System.out.println("== 나의 프로필 ==");
+        System.out.println("ID       : " + member.getUserId());
+        System.out.println("name     : " + member.getName());
+        System.out.println("regDate  : "+member.getRegDate());
+
     }
 }

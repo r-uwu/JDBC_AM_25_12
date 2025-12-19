@@ -1,7 +1,7 @@
 package org.example;
 
-import org.example.Controller.ArticleController;
-import org.example.Controller.MemberController;
+import org.example.controller.ArticleController;
+import org.example.controller.MemberController;
 import org.example.service.ArticleService;
 import org.example.service.MemberService;
 import org.example.util.Session;
@@ -90,8 +90,11 @@ public class App {
         else if(cmd.equals("logout")) {
             memberController.logout();
         }
+        else if(cmd.equals("member profile")) {
+            memberController.showProfile(conn);
+        }
 
-        if (cmd.equals("member join")) {
+        else if (cmd.equals("member join")) {
 
             memberController.join(conn);
 
@@ -114,7 +117,7 @@ public class App {
             try {
                 id = Integer.parseInt(cmd.split(" ")[2]);
             } catch (Exception e) {
-                System.out.println("번호는 정수로 입력해");
+                System.out.println("번호는 정수로 입력해주세요.");
             }
 
             articleController.update(conn, id);

@@ -39,4 +39,11 @@ public class MemberService {
         return member;
     }
 
+    public Member memberProfile(Connection conn, String loginId)
+    {
+        Member member = memberDao.findByLoginId(conn, loginId);
+
+        return member;
+    }
+
 }
