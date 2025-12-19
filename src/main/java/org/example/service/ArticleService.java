@@ -27,6 +27,12 @@ public class ArticleService {
 
     }
 
+    public List<Article> findPage(Connection conn, int findPage) {
+
+        return articleDao.findPage(conn, findPage);
+
+    }
+
     public void update(Connection conn, String title, String body, int id)
     {
         int isUpdate = articleDao.update(conn, title, body, id);

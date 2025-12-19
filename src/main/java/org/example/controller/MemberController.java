@@ -2,6 +2,7 @@ package org.example.controller;
 
 import org.example.Member;
 import org.example.service.MemberService;
+import org.example.util.Ansi;
 import org.example.util.Session;
 
 import java.sql.Connection;
@@ -35,7 +36,7 @@ public class MemberController {
             }
 
             tryLoggedIn++;
-            System.out.println("== 로그인 ==");
+            System.out.println(Ansi.PURPLE + "로그인 ==>"+Ansi.RESET);
             System.out.print("로그인 아이디 : ");
             String loginId = sc.nextLine().trim();
             System.out.print("비밀번호 : ");
@@ -75,7 +76,7 @@ public class MemberController {
         String loginPwConfirm = null;
         String name = null;
 
-        System.out.println("==회원가입==");
+        System.out.println(Ansi.PURPLE + "회원가입 ==>" +  Ansi.RESET);
         while (true) {
             System.out.print("로그인 아이디 : ");
             loginId = sc.nextLine().trim();
@@ -143,7 +144,7 @@ public class MemberController {
 
         Member member = memberService.memberProfile(conn, session.getLoginMember().getUserId());
 
-        System.out.println("== 나의 프로필 ==");
+        System.out.println(Ansi.PURPLE + "나의 프로필 ==>" +  Ansi.RESET);
         System.out.println("ID       : " + member.getUserId());
         System.out.println("name     : " + member.getName());
         System.out.println("regDate  : "+member.getRegDate());

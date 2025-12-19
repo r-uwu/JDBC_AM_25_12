@@ -2,6 +2,8 @@ package org.example.controller;
 
 import org.example.Article;
 import org.example.service.ArticleService;
+import org.example.util.Ansi;
+import org.example.util.Padding;
 import org.example.util.Session;
 
 import java.sql.Connection;
@@ -27,13 +29,13 @@ public class ArticleController {
     {
         if(!session.isLoggedIn())
         {
-            System.out.println("로그인한 사용자만 작성할 수 있습니다.");
+            System.out.println("로그인한 사용자만 작성할 수 있습니다. [login]");
             return;
         }
         String writer = session.getLoginMember().getName();
         int writerId = session.getLoginMember().getId();
 
-        System.out.println("==글쓰기==");
+        System.out.println(Ansi.PURPLE+"글쓰기 ==>"+Ansi.RESET);
         System.out.print("제목 : ");
         String title = sc.nextLine();
         System.out.print("내용 : ");
@@ -46,7 +48,7 @@ public class ArticleController {
 
     public void findAll(Connection conn) throws SQLException
     {
-        System.out.println("==목록==");
+        System.out.println(Ansi.PURPLE+ "목록 =="+Ansi.RESET);
 
         List<Article> articles = articleService.findAll(conn);
 
@@ -58,8 +60,60 @@ public class ArticleController {
         for (Article article : articles) {
             //System.out.printf("   %-4d /   %-10s   / %-10s\n", article.getId(), article.getTitle(), article.getWriter());
             System.out.printf(" %4d ",article.getId());
-            System.out.printf("  /  "+Padding.padRight(article.getTitle(), 20));
+            System.out.printf("  /  "+ Padding.padRight(article.getTitle(), 20));
             System.out.println("  /  "+Padding.padRight(article.getWriter(), 10));
+        }
+    }
+
+    public void findList(Connection conn, int findPage) throws SQLException {
+        System.out.println(Ansi.PURPLE+ "목록 ==>" + Ansi.RESET);
+        findPage = (findPage - 1) * 5;
+        while (true) {
+            List<Article> articles = articleService.findPage(conn, findPage); // limit이 5임
+
+            if (articles.isEmpty()) {
+                System.out.println("게시글이 없습니다");
+            }
+
+            else {
+                System.out.println(Ansi.YELLOW + "  번호  /   제목                 /  작성자" + Ansi.RESET);
+
+                for (Article article : articles) {
+                    //System.out.printf("   %-4d /   %-10s   / %-10s\n", article.getId(), article.getTitle(), article.getWriter());
+                    System.out.printf(" %4d ", article.getId());
+                    System.out.printf("  /  " + Padding.padRight(article.getTitle(), 20));
+                    System.out.println("  /  " + Padding.padRight(article.getWriter(), 10));
+                }
+            }
+
+            System.out.printf("\n현재 페이지 %d\n", findPage/5 + 1);
+
+            while(true) {
+                System.out.println("이전 [prev] / 다음 [next] / 페이지 넘버 이동 [페이지 넘버] / 종료 [undo]\n");
+                String cmd = sc.nextLine().trim();
+                if (cmd.equals("undo"))
+                    return;
+                else if (cmd.equals("next")) {
+                    findPage += 5;
+                    break;
+                } else if (cmd.equals("prev")) {
+                    if (findPage == 0)
+                        System.out.println("이전 페이지가 존재하지 않습니다.");
+                    else{findPage -= 5; break;}
+                } else {
+                    try {
+                        findPage = Integer.parseInt(cmd) * 5 - 5;
+                        if(findPage < 0){
+                            System.out.println("1 이상의 페이지를 입력해주세요.");
+                            findPage = 0;
+                        }
+                        break;
+
+                    } catch (NumberFormatException ex) {
+                        System.out.println(" next, prev, 페이지 넘버만 입력 가능합니다.");
+                    }
+                }
+            }
         }
     }
 
@@ -81,7 +135,7 @@ public class ArticleController {
             System.out.println("본인 글만 수정할 수 있습니다.");
             return;
         }
-        System.out.println("==수정==");
+        System.out.println(Ansi.PURPLE + "수정 ==>"+Ansi.RESET);
         System.out.print("새 제목 : ");
         String title = sc.nextLine().trim();
         System.out.print("새 내용 : ");
@@ -128,67 +182,13 @@ public class ArticleController {
             return;
         }
 
-        System.out.println("번호     : " + article.getId());
+        System.out.println(Ansi.YELLOW+ "번호     : " + article.getId());
         System.out.println("작성자   : " + article.getWriter());
         System.out.println("작성날짜 :  " + article.getRegDate());
         System.out.println("수정날짜 : " + article.getUpdateDate());
         System.out.println("제목     : " + article.getTitle());
-        System.out.println("내용     : " + article.getBody());
+        System.out.println("내용     : " + article.getBody()+Ansi.RESET);
     }
 
 }
 
-class Padding {
-
-    public static int displayWidth(String s) {
-
-        if (s == null) {
-            return 0;
-        }
-
-        int width = 0;
-        for (
-                int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
-
-            if (c <= 0x007F) {              // ASCII
-                width += 1;
-            } else if (c >= 0xAC00 && c <= 0xD7A3) { // 한글
-                width += 2;
-            } else {
-                width += 1; // 기타 문자
-            }
-        }
-        return width;
-    }
-
-    public static String padRight(String s, int totalWidth) {
-        int currentWidth = displayWidth(s);
-        int pad = totalWidth - currentWidth;
-
-        if (pad <= 0) {
-            return s;
-        }
-        return s + " ".repeat(pad);
-    }
-
-    public static String padLeft(String s, int totalWidth) {
-        int pad = totalWidth - displayWidth(s);
-        return " ".repeat(Math.max(0, pad)) + s;
-    }
-}
-
-class Ansi{
-
-    public static final String RESET  = "\u001B[0m";
-
-    public static final String BLACK  = "\u001B[30m";
-    public static final String RED    = "\u001B[31m";
-    public static final String GREEN  = "\u001B[32m";
-    public static final String YELLOW = "\u001B[33m";
-    public static final String BLUE   = "\u001B[34m";
-    public static final String PURPLE = "\u001B[35m";
-    public static final String CYAN   = "\u001B[36m";
-    public static final String WHITE  = "\u001B[37m";
-
-        }

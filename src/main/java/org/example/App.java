@@ -5,6 +5,7 @@ import org.example.controller.MemberController;
 import org.example.service.ArticleService;
 import org.example.service.MemberService;
 import org.example.util.Session;
+import org.example.util.Ansi;
 
 
 import java.sql.*;
@@ -36,8 +37,11 @@ public class App {
 
         System.out.println("==프로그램 시작==");
 
+        helper();
 
         while (true) {
+
+            System.out.println();
             System.out.print("명령어 > ");
             String cmd = sc.nextLine().trim();
 
@@ -83,6 +87,8 @@ public class App {
 
     private int doAction(Connection conn, Scanner sc, String cmd) throws SQLException {
 
+        System.out.println();
+
         if (cmd.equals("login")) {
             memberController.login(conn);
 
@@ -104,14 +110,25 @@ public class App {
         }
 
 
-        else if (cmd.equals("article list")) {
+        else if (cmd.equals("article list all")) {
 
             articleController.findAll(conn);
 
         }
 
-        else if (cmd.startsWith("article modify")) {
+        else if (cmd.startsWith("article list")) {
 
+            int findPage = 0;
+
+            try {
+                findPage = Integer.parseInt(cmd.replace("article list ", ""));
+            } catch (Exception e) {
+
+            }
+            articleController.findList(conn, findPage);
+        }
+
+        else if (cmd.startsWith("article modify")) {
             int id = 0;
 
             try {
@@ -119,22 +136,46 @@ public class App {
             } catch (Exception e) {
                 System.out.println("번호는 정수로 입력해주세요.");
             }
-
             articleController.update(conn, id);
-        } else if (cmd.startsWith("article delete ")) {
+        }
+
+        else if (cmd.startsWith("article delete ")) {
 
             int id = Integer.parseInt(cmd.replace("article delete ", ""));
 
             articleController.delete(conn, id);
         }
 
-
         else if (cmd.startsWith("article detail ")) {
 
             articleController.detail(conn, cmd);
         }
 
+        else if(cmd.startsWith("도움")||cmd.startsWith("help")) {
+            helper();
+        }
+
+        else
+            System.out.println("명령어가 잘못 입력되었어요. 명령어를 볼려면 [help] 입력");
+
         return 1;
         //이 위에있는 리턴 어떢함?
+    }
+
+    void helper()
+    {
+        System.out.println(Ansi.PURPLE + "명령어 모음을 알려드릴게요.\n");
+
+        System.out.println(Ansi.BLUE+"회원가입 [ member join ]");
+        System.out.println("내 프로필 조회 [ member profile ]\n");
+
+        System.out.println("로그인 [ login ]");
+        System.out.println("로그아웃 [ logout ]\n");
+
+        System.out.println("게시글 작성 [ article write ]");
+        System.out.println("게시글 목록 [ article list (공백 혹은 페이지 번호) ]");
+        System.out.println("게시글 모두 조회 [ article list all ]");
+        System.out.println("게시글 수정 [ article modify (게시글 번호) ]");
+        System.out.println("게시글 삭제 [ article delete (게시글 번호) ]"+Ansi.RESET);
     }
 }
