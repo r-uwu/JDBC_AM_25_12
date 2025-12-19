@@ -54,16 +54,22 @@ public class ArticleDao {
         return articles;
     }
 
-    public List<Article> findPage(Connection conn, int selectPage) { //찾는 페이지 번호 없으면 1페이지 보여주기
+    public int findLastPage(Connection conn, int pageSize)
+    {
         SecSql findLastPage = new SecSql();
         findLastPage.append("SELECT Count(*) FROM article");
         int lastPage = DBUtil.selectRowIntValue(conn, findLastPage);
-        lastPage = lastPage / 5;
+        lastPage = (lastPage / pageSize) + 1;
+
+        return lastPage;
+    }
+
+    public List<Article> findPage(Connection conn, int pageSize, int findPage) { //찾는 페이지 번호 없으면 1페이지 보여주기
 
         SecSql sql = new SecSql();
         sql.append("SELECT * FROM article");
         sql.append("ORDER BY id Desc");
-        sql.append("LIMIT ? OFFSET ?", 5, selectPage); //offset은 반드시 limit의 곱으로
+        sql.append("LIMIT ? OFFSET ?", pageSize, findPage);
 
         List<Map<String, Object>> rows = DBUtil.selectRows(conn, sql);
         List<Article> articles = new ArrayList<Article>();
@@ -93,6 +99,22 @@ public class ArticleDao {
         sql.append("WHERE  id = ?", id);
 
         return DBUtil.update(conn, sql);
+    }
+
+    public List<Article> searchByTitle(Connection conn, String searchKeyword) {
+
+        SecSql sql = new SecSql();
+        //sql.append("SELECT * FROM article WHERE title LIKE '%s'", title);
+        sql.append("SELECT * FROM article WHERE title LIKE ? ", "%"+searchKeyword+"%");
+
+        List<Map<String, Object>> rows = DBUtil.selectRows(conn, sql);
+        List<Article> articles = new ArrayList<>();
+        for (Map<String, Object> row : rows) {
+            articles.add(new Article(row));
+        }
+        return articles;
+
+
     }
 
 }

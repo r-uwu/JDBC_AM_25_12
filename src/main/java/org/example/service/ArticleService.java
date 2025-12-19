@@ -10,6 +10,7 @@ import java.util.List;
 public class ArticleService {
 
     private ArticleDao articleDao;
+    final int PAGE_SIZE = 5;
 
     public ArticleService() {
 
@@ -27,9 +28,14 @@ public class ArticleService {
 
     }
 
+    public int findLastPage(Connection conn) {
+        return articleDao.findLastPage(conn, PAGE_SIZE);
+    }
+
     public List<Article> findPage(Connection conn, int findPage) {
 
-        return articleDao.findPage(conn, findPage);
+        int offset = (findPage - 1) * PAGE_SIZE;
+        return articleDao.findPage(conn, PAGE_SIZE, offset);
 
     }
 
@@ -66,6 +72,11 @@ public class ArticleService {
         }
 
         else return article;
+    }
+
+    public List<Article> searchByTitle(Connection conn, String searchKeyword) {
+
+        return articleDao.searchByTitle(conn, searchKeyword);
 
     }
 }

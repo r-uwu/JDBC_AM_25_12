@@ -118,10 +118,14 @@ public class App {
 
         else if (cmd.startsWith("article list")) {
 
-            int findPage = 0;
+            int findPage = 1;
 
             try {
                 findPage = Integer.parseInt(cmd.replace("article list ", ""));
+                if(findPage < 1) {
+                    System.out.println("1 이상의 페이지를 입력해주세요. 1페이지를 조회합니다.\n");
+                    findPage = 1;
+                }
             } catch (Exception e) {
 
             }
@@ -151,6 +155,11 @@ public class App {
             articleController.detail(conn, cmd);
         }
 
+        else if (cmd.startsWith("article search ")) {
+
+            articleController.search(conn, cmd);
+        }
+
         else if(cmd.startsWith("도움")||cmd.startsWith("help")) {
             helper();
         }
@@ -166,16 +175,22 @@ public class App {
     {
         System.out.println(Ansi.PURPLE + "명령어 모음을 알려드릴게요.\n");
 
-        System.out.println(Ansi.BLUE+"회원가입 [ member join ]");
+
+        System.out.println(Ansi.BLUE+"로그인 [ login ]");
+        System.out.println("로그아웃 [ logout ]");
+        System.out.println("회원가입 [ member join ]");
         System.out.println("내 프로필 조회 [ member profile ]\n");
 
-        System.out.println("로그인 [ login ]");
-        System.out.println("로그아웃 [ logout ]\n");
 
         System.out.println("게시글 작성 [ article write ]");
+        System.out.println("게시글 수정 [ article modify (게시글 번호) ]");
+        System.out.println("게시글 삭제 [ article delete (게시글 번호) ]\n");
+
         System.out.println("게시글 목록 [ article list (공백 혹은 페이지 번호) ]");
         System.out.println("게시글 모두 조회 [ article list all ]");
-        System.out.println("게시글 수정 [ article modify (게시글 번호) ]");
-        System.out.println("게시글 삭제 [ article delete (게시글 번호) ]"+Ansi.RESET);
+        System.out.println("게시글 검색 [ article search (검색할 제목 일부) ]\n");
+
+        System.out.println("프로그램 종료 [ exit ]"+Ansi.RESET);
     }
 }
+
