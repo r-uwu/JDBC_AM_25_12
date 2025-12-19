@@ -53,10 +53,13 @@ public class ArticleController {
         if (articles.isEmpty()) {
             System.out.println("게시글이 없습니다");
         }
-        System.out.println("  번호  /   제목   ");
+        System.out.println(Ansi.PURPLE+"  번호  /   제목                 /  작성자"+Ansi.RESET);
 
         for (Article article : articles) {
-            System.out.printf("   %-4d /   %-10s   \n", article.getId(), article.getTitle());
+            //System.out.printf("   %-4d /   %-10s   / %-10s\n", article.getId(), article.getTitle(), article.getWriter());
+            System.out.printf(" %4d ",article.getId());
+            System.out.printf("  /  "+Padding.padRight(article.getTitle(), 20));
+            System.out.println("  /  "+Padding.padRight(article.getWriter(), 10));
         }
     }
 
@@ -132,4 +135,60 @@ public class ArticleController {
         System.out.println("제목     : " + article.getTitle());
         System.out.println("내용     : " + article.getBody());
     }
+
 }
+
+class Padding {
+
+    public static int displayWidth(String s) {
+
+        if (s == null) {
+            return 0;
+        }
+
+        int width = 0;
+        for (
+                int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+
+            if (c <= 0x007F) {              // ASCII
+                width += 1;
+            } else if (c >= 0xAC00 && c <= 0xD7A3) { // 한글
+                width += 2;
+            } else {
+                width += 1; // 기타 문자
+            }
+        }
+        return width;
+    }
+
+    public static String padRight(String s, int totalWidth) {
+        int currentWidth = displayWidth(s);
+        int pad = totalWidth - currentWidth;
+
+        if (pad <= 0) {
+            return s;
+        }
+        return s + " ".repeat(pad);
+    }
+
+    public static String padLeft(String s, int totalWidth) {
+        int pad = totalWidth - displayWidth(s);
+        return " ".repeat(Math.max(0, pad)) + s;
+    }
+}
+
+class Ansi{
+
+    public static final String RESET  = "\u001B[0m";
+
+    public static final String BLACK  = "\u001B[30m";
+    public static final String RED    = "\u001B[31m";
+    public static final String GREEN  = "\u001B[32m";
+    public static final String YELLOW = "\u001B[33m";
+    public static final String BLUE   = "\u001B[34m";
+    public static final String PURPLE = "\u001B[35m";
+    public static final String CYAN   = "\u001B[36m";
+    public static final String WHITE  = "\u001B[37m";
+
+        }
